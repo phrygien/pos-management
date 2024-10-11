@@ -21,7 +21,7 @@ export default {
     },
 
     plugins: [
-		forms,
+		//forms,
 		require("daisyui")
 	],
 };

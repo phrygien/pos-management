@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
+    {{-- Cropper.js --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -61,7 +64,8 @@
                         <x-mary-menu-item title="Marques" icon="o-rectangle-stack" link="###" />
                         <x-mary-menu-item title="Tous les produits" icon="o-rectangle-stack"
                             link="/catalogues/products" />
-                        <x-mary-menu-item title="Ajouter un produit" icon="o-archive-box" link="####" />
+                        <x-mary-menu-item title="Ajouter un produit" icon="o-archive-box"
+                            link="/catalogues/products/create" />
                         <x-mary-menu-item title="Vartiation des produits" icon="o-archive-box-arrow-down"
                             link="####" />
                         <x-mary-menu-item title="Gestion codes-barres" icon="o-archive-box" link="####" />

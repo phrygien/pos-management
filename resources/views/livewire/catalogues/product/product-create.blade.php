@@ -127,7 +127,7 @@ new class extends Component {
                 </div>
 
                 <div class="m-5">
-                    <x-mary-choices label="Unité de mesure" wire:model="unit_searchable_id" icon="o-tag"
+                    <x-mary-choices label="Unité de mesure" wire:model="unit_searchable_id" icon="o-calculator"
                         :options="$unitsSearchable" single searchable
                         class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
                 </div>

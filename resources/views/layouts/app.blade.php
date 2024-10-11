@@ -62,6 +62,7 @@
                     <x-mary-menu-sub title="Catalogues" icon="o-cube">
                         <x-mary-menu-item title="Categories produits" icon="o-tag" link="###" />
                         <x-mary-menu-item title="Marques" icon="o-rectangle-stack" link="###" />
+                        <x-mary-menu-item title="Unites de mesure" icon="o-calculator" link="###" />
                         <x-mary-menu-item title="Tous les produits" icon="o-rectangle-stack"
                             link="/catalogues/products" />
                         <x-mary-menu-item title="Ajouter un produit" icon="o-archive-box"

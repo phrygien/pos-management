@@ -58,14 +58,16 @@ new class extends Component {
 
 <div>
     <div class="flex flex-col justify-between mt-6 mb-6 sm:flex-row">
-        <div class="relative col-span-3 text-sm text-gray-800">
-            <div class="absolute top-0 bottom-0 left-0 flex items-center pl-2 text-gray-500 pointer-events-none">
-                <x-search-icon />
-            </div>
-            <input type="text" autocomplete="off" placeholder="Search product data..." wire:model.live="search"
-                class="block py-2 pl-10 text-gray-900 border-0 rounded-lg ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+        <div class="relative flex space-x-4 text-sm text-gray-800">
+            <x-mary-input icon="o-qr-code" placeholder="Code-barre"
+                class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+            <x-mary-input icon="o-magnifying-glass" placeholder="Libelle"
+                class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live="search" />
+            <x-mary-input icon="o-tag" placeholder="Categorie"
+                class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
         </div>
     </div>
+
 
     <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
         <div class="p-6 text-gray-900 dark:text-gray-100">

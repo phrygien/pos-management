@@ -4,8 +4,7 @@ use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 
-new class extends Component
-{
+new class extends Component {
     public string $password = '';
 
     /**
@@ -34,10 +33,8 @@ new class extends Component
         </p>
     </header>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+    <x-danger-button x-data=""
+        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">{{ __('Delete Account') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable>
         <form wire:submit="deleteUser" class="p-6">
@@ -51,18 +48,9 @@ new class extends Component
             </p>
 
             <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    wire:model="password"
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                <x-mary-input label="Mot de passe" wire:model="password" id="password" name="password" type="password"
+                    class="mt-1 block w-full border-0 rounded-lg ring-1 ring-inset ring-gray-200"
+                    placeholder="{{ __('Saisissez votre mot de passe') }}" />
             </div>
 
             <div class="mt-6 flex justify-end">
@@ -70,9 +58,8 @@ new class extends Component
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
+                <x-mary-button label="Supprimer" class="ml-2 btn-error text-white" type="submit"
+                    spinner="deleteUser" />
             </div>
         </form>
     </x-modal>

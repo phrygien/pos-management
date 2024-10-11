@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Brand;
+use App\Models\Store;
+use App\Models\Unit;
 use App\Models\Product;
 use Mary\Traits\Toast;
 use Livewire\WithPagination;
@@ -15,9 +19,75 @@ new class extends Component {
     public string $search = '';
     public string $barcode = '';
 
-    public bool $drawer = false;
+    #[Rule('required')]
+    public ?int $category_searchable_id = null;
+
+    #[Rule('required')]
+    public ?int $brand_searchable_id = null;
+
+    #[Rule('required')]
+    public ?int $unit_searchable_id = null;
+
+    public bool $showDrawerFilter = false;
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
+
+    // Options list
+    public Collection $categoriesSearchable;
+
+    //Brand Options list
+    public Collection $brandsSearchable;
+
+    //Brand Options list
+    public Collection $unitsSearchable;
+
+    public function mount(): void
+    {
+        $this->search();
+        $this->searchBrand();
+        $this->searchUnit();
+    }
+    // Also called as you type
+    public function search(string $value = '')
+    {
+        // Besides the search results, you must include on demand selected option
+        $selectedOption = Category::where('id', $this->category_searchable_id)->get();
+
+        $this->categoriesSearchable = Category::query()
+            ->where('name', 'like', "%$value%")
+            ->take(5)
+            ->orderBy('name')
+            ->get()
+            ->merge($selectedOption); // <-- Adds selected option
+    }
+
+    // Also called as you type
+    public function searchBrand(string $value = '')
+    {
+        // Besides the search results, you must include on demand selected option
+        $selectedOption = Brand::where('id', $this->brand_searchable_id)->get();
+
+        $this->brandsSearchable = Brand::query()
+            ->where('name', 'like', "%$value%")
+            ->take(5)
+            ->orderBy('name')
+            ->get()
+            ->merge($selectedOption); // <-- Adds selected option
+    }
+
+    // Also called as you type
+    public function searchUnit(string $value = '')
+    {
+        // Besides the search results, you must include on demand selected option
+        $selectedOption = Unit::where('id', $this->unit_searchable_id)->get();
+
+        $this->unitsSearchable = Unit::query()
+            ->where('name', 'like', "%$value%")
+            ->take(5)
+            ->orderBy('name')
+            ->get()
+            ->merge($selectedOption); // <-- Adds selected option
+    }
 
     // Clear filters
     public function clear(): void
@@ -43,7 +113,6 @@ new class extends Component {
     {
         return Product::query()
             ->with('category', 'brand', 'unit')
-            //->when($this->search, fn(Builder $query) => $query->where('name', 'like', "%{$this->search}%"))
             ->when($this->search, function (Builder $query) {
                 // Recherche uniquement par nom
                 $query->where('name', 'like', "%{$this->search}%");
@@ -72,8 +141,9 @@ new class extends Component {
                 class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live="barcode" />
             <x-mary-input icon="o-magnifying-glass" placeholder="Libelle"
                 class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live="search" />
-            <x-mary-input icon="o-tag" placeholder="Categorie"
-                class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+            {{-- <x-mary-button icon="o-funnel" label="Filtres" wire:click="$toggle('showDrawerFilter')"
+                class="btn-error text-white" /> --}}
+            <x-secondary-button wire:click="$toggle('showDrawerFilter')">Filtres</x-secondary-button>
         </div>
     </div>
 
@@ -83,4 +153,26 @@ new class extends Component {
             <x-mary-table :headers="$headers" :rows="$products" :sort-by="$sortBy" with-pagination />
         </div>
     </div>
+
+    {{-- Right --}}
+    <x-mary-drawer wire:model="showDrawerFilter" class="w-11/12 lg:w-1/3" title="Filtrer les articles"
+        subtitle="Par categorie, marque, unite de mesure ou code-barre" separator with-close-button close-on-escape
+        right>
+        <div>
+            <div class="mb-5">
+                <x-mary-choices label="Categorie" wire:model="category_searchable_id" icon="o-tag" :options="$categoriesSearchable"
+                    single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+            </div>
+
+            <div class="mb-5">
+                <x-mary-choices label="Marque" wire:model="brand_searchable_id" icon="o-rectangle-stack"
+                    :options="$brandsSearchable" single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+            </div>
+
+            <div class="mb-5">
+                <x-mary-choices label="Unité de mesure" wire:model="unit_searchable_id" icon="o-calculator"
+                    :options="$unitsSearchable" single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+            </div>
+        </div>
+    </x-mary-drawer>
 </div>

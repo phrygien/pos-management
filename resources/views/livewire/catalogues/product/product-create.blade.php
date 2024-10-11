@@ -25,6 +25,12 @@ new class extends Component {
     #[Rule('nullable|image|max:1024')]
     public $photo;
 
+    public string $name = '';
+
+    public string $barcode = '';
+
+    public string $price = '';
+
     // Options list
     public Collection $categoriesSearchable;
 
@@ -83,6 +89,11 @@ new class extends Component {
             ->get()
             ->merge($selectedOption); // <-- Adds selected option
     }
+
+    public function updatedBarcode($barcode)
+    {
+        $this->toast("Code-barre scanné avec succès: $barcode", 'success');
+    }
 }; ?>
 
 <div>
@@ -100,7 +111,12 @@ new class extends Component {
 
                 <div class="m-5">
                     <x-mary-input label="Code-barre" placeholder="Scanner le code-barre" icon="o-qr-code" hint=""
-                        class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+                        class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.lazy="barcode" />
+                    {{-- <button type="button" onclick="startBarcodeScanner()" class="mt-3 btn btn-primary">Scanner le
+                        code-barre</button>
+                    <div id="scanner-container" style="display: none;">
+                        <video id="barcode-scanner"></video>
+                    </div> --}}
                 </div>
 
                 <div class="m-5">
@@ -140,8 +156,40 @@ new class extends Component {
         </x-mary-form>
 
         <div>
+
             {{-- Get a nice picture from `StorySet` web site --}}
             <img src="https://flow.mary-ui.com/images/edit-form.png" width="300" class="mx-auto" />
         </div>
     </div>
 </div>
+
+{{-- <script>
+    function startBarcodeScanner() {
+        document.getElementById('scanner-container').style.display = 'block'; // Show the scanner container
+
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#barcode-scanner') // The video element
+            },
+            decoder: {
+                readers: ["code_128_reader", "ean_reader", "ean_8_reader", "upc_reader", "upc_e_reader"]
+            }
+        }, function(err) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            Quagga.start();
+        });
+
+        Quagga.onDetected(function(result) {
+            var code = result.codeResult.code;
+            // Set the barcode value in Livewire
+            @this.set('barcode', code);
+            Quagga.stop();
+            document.getElementById('scanner-container').style.display = 'none'; // Hide scanner
+        });
+    }
+</script> --}}

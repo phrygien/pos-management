@@ -13,6 +13,7 @@ new class extends Component {
     use WithPagination;
 
     public string $search = '';
+    public string $barcode = '';
 
     public bool $drawer = false;
 
@@ -42,7 +43,15 @@ new class extends Component {
     {
         return Product::query()
             ->with('category', 'brand', 'unit')
-            ->when($this->search, fn(Builder $query) => $query->where('name', 'like', "%{$this->search}%"))
+            //->when($this->search, fn(Builder $query) => $query->where('name', 'like', "%{$this->search}%"))
+            ->when($this->search, function (Builder $query) {
+                // Recherche uniquement par nom
+                $query->where('name', 'like', "%{$this->search}%");
+            })
+            ->when($this->barcode, function (Builder $query) {
+                // Recherche uniquement par code-barres
+                $query->where('barcode', 'like', "%{$this->barcode}%");
+            })
             ->orderBy(...array_values($this->sortBy))
             ->paginate(20);
     }
@@ -60,7 +69,7 @@ new class extends Component {
     <div class="flex flex-col justify-between mt-6 mb-6 sm:flex-row">
         <div class="relative flex space-x-4 text-sm text-gray-800">
             <x-mary-input icon="o-qr-code" placeholder="Code-barre"
-                class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+                class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live="barcode" />
             <x-mary-input icon="o-magnifying-glass" placeholder="Libelle"
                 class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live="search" />
             <x-mary-input icon="o-tag" placeholder="Categorie"

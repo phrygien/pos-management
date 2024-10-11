@@ -16,6 +16,7 @@ export default {
             fontFamily: {
                 //sans: ['Figtree', ...defaultTheme.fontFamily.sans],
                 sans: ['Fira Sans', 'sans-serif'],
+                //sans: ['Josefin Sans', 'sans-serif'],
             },
         },
     },

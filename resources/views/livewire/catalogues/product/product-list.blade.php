@@ -105,7 +105,7 @@ new class extends Component {
     // Table headers
     public function headers(): array
     {
-        return [['key' => 'id', 'label' => 'ID', 'class' => 'w-1'], ['key' => 'name', 'label' => 'Name', 'class' => 'w-64'], ['key' => 'brand.name', 'label' => 'Brand', 'class' => 'w-64'], ['key' => 'category.name', 'label' => 'Category', 'class' => 'w-64'], ['key' => 'barcode', 'label' => 'Code bar', 'class' => 'w-20'], ['key' => 'price', 'label' => 'Price', 'class' => 'w-20']];
+        return [['key' => 'id', 'label' => 'ID', 'class' => 'w-1'], ['key' => 'name', 'label' => 'Libelle', 'class' => 'w-64'], ['key' => 'brand.name', 'label' => 'Marque', 'class' => 'w-64'], ['key' => 'category.name', 'label' => 'Category', 'class' => 'w-64'], ['key' => 'unit.name', 'label' => 'Unite', 'class' => 'w-64'], ['key' => 'barcode', 'label' => 'Code barre', 'class' => 'w-20'], ['key' => 'price', 'label' => 'Prix', 'class' => 'w-20']];
     }
 
     //List All Products
@@ -120,6 +120,18 @@ new class extends Component {
             ->when($this->barcode, function (Builder $query) {
                 // Recherche uniquement par code-barres
                 $query->where('barcode', 'like', "%{$this->barcode}%");
+            })
+            ->when($this->category_searchable_id, function (Builder $query) {
+                // Filtrer par catégorie si `category_searchable_id` est défini
+                $query->where('category_id', $this->category_searchable_id);
+            })
+            ->when($this->brand_searchable_id, function (Builder $query) {
+                // Filtrer par marque si `brand_searchable_id` est défini
+                $query->where('brand_id', $this->brand_searchable_id);
+            })
+            ->when($this->unit_searchable_id, function (Builder $query) {
+                // Filtrer par unité si `unit_searchable_id` est défini
+                $query->where('unit_id', $this->unit_searchable_id);
             })
             ->orderBy(...array_values($this->sortBy))
             ->paginate(20);
@@ -142,7 +154,7 @@ new class extends Component {
             <x-mary-input icon="o-magnifying-glass" placeholder="Libelle"
                 class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live="search" />
             {{-- <x-mary-button icon="o-funnel" label="Filtres" wire:click="$toggle('showDrawerFilter')"
-                class="btn-error text-white" /> --}}
+                class="text-white btn-error" /> --}}
             <x-secondary-button wire:click="$toggle('showDrawerFilter')">Filtres</x-secondary-button>
         </div>
     </div>
@@ -160,17 +172,17 @@ new class extends Component {
         right>
         <div>
             <div class="mb-5">
-                <x-mary-choices label="Categorie" wire:model="category_searchable_id" icon="o-tag" :options="$categoriesSearchable"
-                    single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+                <x-mary-choices label="Categorie" wire:model.live="category_searchable_id" icon="o-tag"
+                    :options="$categoriesSearchable" single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
             </div>
 
             <div class="mb-5">
-                <x-mary-choices label="Marque" wire:model="brand_searchable_id" icon="o-rectangle-stack"
+                <x-mary-choices label="Marque" wire:model.live="brand_searchable_id" icon="o-rectangle-stack"
                     :options="$brandsSearchable" single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
             </div>
 
             <div class="mb-5">
-                <x-mary-choices label="Unité de mesure" wire:model="unit_searchable_id" icon="o-calculator"
+                <x-mary-choices label="Unité de mesure" wire:model.live="unit_searchable_id" icon="o-calculator"
                     :options="$unitsSearchable" single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
             </div>
         </div>

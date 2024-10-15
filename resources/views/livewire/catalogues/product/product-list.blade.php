@@ -105,7 +105,7 @@ new class extends Component {
     // Table headers
     public function headers(): array
     {
-        return [['key' => 'id', 'label' => 'ID', 'class' => 'w-1'], ['key' => 'name', 'label' => 'Libelle', 'class' => 'w-64'], ['key' => 'brand.name', 'label' => 'Marque', 'class' => 'w-64'], ['key' => 'category.name', 'label' => 'Category', 'class' => 'w-64'], ['key' => 'unit.name', 'label' => 'Unite', 'class' => 'w-64'], ['key' => 'barcode', 'label' => 'Code barre', 'class' => 'w-20'], ['key' => 'price', 'label' => 'Prix', 'class' => 'w-20']];
+        return [['key' => 'id', 'label' => 'ID', 'class' => 'w-1'], ['key' => 'image', 'label' => 'Photo', 'class' => 'w-1'], ['key' => 'name', 'label' => 'Libelle', 'class' => 'w-64'], ['key' => 'brand.name', 'label' => 'Marque', 'class' => 'w-64'], ['key' => 'category.name', 'label' => 'Category', 'class' => 'w-64'], ['key' => 'unit.name', 'label' => 'Unite', 'class' => 'w-64'], ['key' => 'barcode', 'label' => 'Code barre', 'class' => 'w-20'], ['key' => 'price', 'label' => 'Prix', 'class' => 'w-20']];
     }
 
     //List All Products
@@ -162,7 +162,11 @@ new class extends Component {
 
     <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
         <div class="p-6 text-gray-900 dark:text-gray-100">
-            <x-mary-table :headers="$headers" :rows="$products" :sort-by="$sortBy" with-pagination />
+            <x-mary-table :headers="$headers" :rows="$products" :sort-by="$sortBy" with-pagination>
+                @scope('cell_image', $product)
+                    <x-mary-avatar image="{{ $product->image ?? '/empty-user.jpg' }}" class="!w-10" />
+                @endscope
+            </x-mary-table>
         </div>
     </div>
 

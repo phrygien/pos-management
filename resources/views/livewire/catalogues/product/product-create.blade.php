@@ -127,6 +127,7 @@ new class extends Component {
         if ($this->photo) {
             // Enregistrement de l'image dans le dossier 'photos' dans le répertoire 'storage/app/public/photos'
             $photoPath = $this->photo->store('photos', 'public');
+            $photoUrl = "/storage/$photoPath"; // Générer l'URL complète
         }
 
         $product = Product::create([
@@ -137,10 +138,10 @@ new class extends Component {
             'name' => $this->name,
             'barcode' => $this->barcode,
             'price' => $this->price,
-            'image' => isset($photoPath) ? $photoPath : null,
+            'image' => isset($photoUrl) ? $photoUrl : null,
         ]);
 
-        $this->success("Produit creé avec succès: $product->name", 'success');
+        $this->success("Produit creé avec succès: $product->name", redirectTo: '/catalogues/products/create');
         $this->reset();
     }
 }; ?>

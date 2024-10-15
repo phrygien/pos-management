@@ -186,5 +186,7 @@ new class extends Component {
                     :options="$unitsSearchable" single searchable class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
             </div>
         </div>
+        <x-mary-button label="Effacer les filtres" class="float-right text-white btn-error" type="submit"
+            spinner="save" />
     </x-mary-drawer>
 </div>

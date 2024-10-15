@@ -3,6 +3,7 @@
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Store;
+use App\Models\Product;
 use App\Models\Unit;
 use Mary\Traits\Toast;
 use Livewire\Volt\Component;
@@ -22,13 +23,19 @@ new class extends Component {
     #[Rule('required')]
     public ?int $unit_searchable_id = null;
 
+    #[Rule('required')]
+    public ?int $store_searchable_id = null;
+
     #[Rule('nullable|image|max:1024')]
     public $photo;
 
+    #[Rule('required')]
     public string $name = '';
 
+    #[Rule('required')]
     public string $barcode = '';
 
+    #[Rule('required')]
     public string $price = '';
 
     // Options list
@@ -40,12 +47,16 @@ new class extends Component {
     //Brand Options list
     public Collection $unitsSearchable;
 
+    //Brand Options list
+    public Collection $storesSearchable;
+
     public function mount(): void
     {
         // Fill options when component first renders
         $this->search();
         $this->searchBrand();
         $this->searchUnit();
+        $this->searchStore();
     }
 
     // Also called as you type
@@ -90,9 +101,47 @@ new class extends Component {
             ->merge($selectedOption); // <-- Adds selected option
     }
 
+    // Also called as you type
+    public function searchStore(string $value = '')
+    {
+        // Besides the search results, you must include on demand selected option
+        $selectedOption = Store::where('id', $this->store_searchable_id)->get();
+
+        $this->storesSearchable = Store::query()
+            ->where('name', 'like', "%$value%")
+            ->take(5)
+            ->orderBy('name')
+            ->get()
+            ->merge($selectedOption); // <-- Adds selected option
+    }
+
     public function updatedBarcode($barcode)
     {
         $this->toast("Code-barre scanné avec succès: $barcode", 'success');
+    }
+
+    public function save()
+    {
+        $this->validate();
+
+        if ($this->photo) {
+            // Enregistrement de l'image dans le dossier 'photos' dans le répertoire 'storage/app/public/photos'
+            $photoPath = $this->photo->store('photos', 'public');
+        }
+
+        $product = Product::create([
+            'category_id' => $this->category_searchable_id,
+            'brand_id' => $this->brand_searchable_id,
+            'unit_id' => $this->unit_searchable_id,
+            'store_id' => $this->store_searchable_id,
+            'name' => $this->name,
+            'barcode' => $this->barcode,
+            'price' => $this->price,
+            'image' => isset($photoPath) ? $photoPath : null,
+        ]);
+
+        $this->success("Produit creé avec succès: $product->name", 'success');
+        $this->reset();
     }
 }; ?>
 
@@ -102,11 +151,22 @@ new class extends Component {
         <x-mary-form wire:submit="save">
             <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
                 <div class="m-5">
+                    <x-mary-choices label="Point de vente" wire:model.live="store_searchable_id" icon="o-tag"
+                        :options="$storesSearchable" single searchable
+                        class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+                </div>
+
+                <div class="m-5">
                     <x-mary-file label="Photo de l'article " wire:model="photo" accept="image/png, image/jpeg"
                         hint="Click to change" crop-after-change>
                         <img src="{{ $user->avatar ?? 'https://flow.mary-ui.com/images/empty-product.png' }}"
                             class="h-40 mt-3 rounded-lg" />
                     </x-mary-file>
+                </div>
+
+                <div class="m-5">
+                    <x-mary-input label="Libelle" placeholder="Sair le libelle" icon="o-cube" hint=""
+                        class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" wire:model.live='name' />
                 </div>
 
                 <div class="m-5">
@@ -119,39 +179,36 @@ new class extends Component {
                     </div> --}}
                 </div>
 
-                <div class="m-5">
-                    <x-mary-input label="Libelle" placeholder="Saisir le libelle" icon="o-cube"
-                        hint=""class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
-                </div>
-
 
                 <div class="m-5">
                     <x-mary-input label="Prix unitaire" placeholder="Sair le prix unitaire" icon="o-banknotes"
-                        hint="" class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
+                        hint="" class="border-0 rounded-lg ring-1 ring-inset ring-gray-200"
+                        wire:model.live="price" />
                 </div>
 
                 <div class="m-5">
-                    <x-mary-choices label="Categorie" wire:model="category_searchable_id" icon="o-tag"
+                    <x-mary-choices label="Categorie" wire:model.live="category_searchable_id" icon="o-tag"
                         :options="$categoriesSearchable" single searchable
                         class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
                 </div>
 
                 <div class="m-5">
-                    <x-mary-choices label="Marque" wire:model="brand_searchable_id" icon="o-rectangle-stack"
+                    <x-mary-choices label="Marque" wire:model.live="brand_searchable_id" icon="o-rectangle-stack"
                         :options="$brandsSearchable" single searchable
                         class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
                 </div>
 
                 <div class="m-5">
-                    <x-mary-choices label="Unité de mesure" wire:model="unit_searchable_id" icon="o-calculator"
+                    <x-mary-choices label="Unité de mesure" wire:model.live="unit_searchable_id" icon="o-calculator"
                         :options="$unitsSearchable" single searchable
                         class="border-0 rounded-lg ring-1 ring-inset ring-gray-200" />
                 </div>
 
             </div>
             <x-slot:actions>
-                <x-mary-button label="Cancel" />
-                <x-mary-button label="Enregistrer le produit" class="btn-primary" type="submit" spinner="save" />
+                <x-mary-button label="Annuler" link="/catalogues/products" />
+                <x-mary-button label="Enregistrer le produit" class="btn-primary" type="submit" spinner="save"
+                    icon="o-paper-airplane" />
             </x-slot:actions>
         </x-mary-form>
 
